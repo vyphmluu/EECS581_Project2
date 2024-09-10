@@ -9,12 +9,26 @@ Last Modified: 9/9/2024
 """
 
 class Ship:
-    def __init__(self, size):
+    def __init__(self, size, orientation, location):
         self.size = size # record size of the ship
-        self.hits = 0 # record number of hits on the ship
+        self.damage = 0 # record number of hits on the ship
+        self.orientation = orientation
+        self.location = location
 
     def is_sunk(self):
-        return self.hits == self.size # check if sunk by seeing if hits equals size
+        return self.damage >= self.size # check if sunk by seeing if hits equals size
 
     def hit(self):
-        self.hits += 1 # add a hit to the ship
+        self.damage += 1 # add a hit to the ship
+        
+    def getSize(self):
+        return self.size
+    
+    def getOrientation(self):
+        return self.orientation
+    
+    def getLocation(self):
+        return self.location
+    
+    def getDamage(self):
+        return self.damage
