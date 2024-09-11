@@ -5,9 +5,9 @@ Description: This is the main initialization file for the game, we are creating 
 Authors: Carson Treece, ...
 Other Sources: ...
 Date Created: 9/9/2024
-Last Modified: 9/9/2024
+Last Modified: 9/10/2024
 """
-
+import os
 from player import Player
 from board import Board
 from ship import Ship
@@ -21,10 +21,10 @@ def main():
     print("Welcome to Battleship!")
 
     # Determine the number of ships
-    num_ships = int(input("Please Enter the number of ships (between 1-5):")) # User input for number of ships
+    num_ships = int(input("Please Enter the number of ships (between 1-5): ")) # User input for number of ships
     while num_ships < 1 or num_ships > 5: # Check if the number of ships is valid
         print("Invalid number of ships. Please enter a number between 1 and 5.") 
-        num_ships = int(input("Please Enter the number of ships (between 1-5):")) # Ask for input again
+        num_ships = int(input("Please Enter the number of ships (between 1-5): ")) # Ask for input again
 
     # Moved to after num_ships is defined due to how board.py is structured
     # Create our players
@@ -38,31 +38,47 @@ def main():
     print("Player 1, please place your ships.")
     p1.place_ships(ship_sizes) # needs to be implemented
 
+    # Prints board to show Player 1
+    p1.print_board()
+
+    input("Press enter to give control to Player 2\n")
+
+    # Clears the terminal before Player 2 places their ships
+    os.system('cls' if os.name == 'nt' else 'clear')
+
     # Player 2 places their ships
     print("Player 2, please place your ships.")
     p2.place_ships(ship_sizes) # needs to be implemented
+    
+    # Clears the terminal before the game begins
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+    # Prints board to show Player 2
+    p2.print_board()
+
+    input("Press enter to start the game\n")
 
     # now we play the game
-    while True:
-        print("Player 1's turn.")
+    # while True:
+    #     print("Player 1's turn.")
 
-        # Player 1 attacks Player 2
-        p1.attack_opponent(p2) # needs to be implemented
+    #     # Player 1 attacks Player 2
+    #     p1.attack_opponent(p2) # needs to be implemented
 
-        # Check if Player 2 is defeated
-        if p2.is_defeated(): # needs to be implemented
-            print("Player 1 wins!")
-            break
+    #     # Check if Player 2 is defeated
+    #     if p2.is_defeated(): # needs to be implemented
+    #         print("Player 1 wins!")
+    #         break
             
-        print("Player 2's turn.")
+    #     print("Player 2's turn.")
 
-        # Player 2 attacks Player 1
-        p2.attack_opponent(p1) # needs to be implemented
+    #     # Player 2 attacks Player 1
+    #     p2.attack_opponent(p1) # needs to be implemented
 
-        # Check if Player 1 is defeated
-        if p1.is_defeated(): # needs to be implemented
-            print("Player 2 wins!")
-            break
+    #     # Check if Player 1 is defeated
+    #     if p1.is_defeated(): # needs to be implemented
+    #         print("Player 2 wins!")
+    #         break
 
 if __name__ == "__main__":
     main()

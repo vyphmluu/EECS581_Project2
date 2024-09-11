@@ -4,7 +4,7 @@ Description: This is the board class, information to be added later
 Authors: Carson Treece, Zachary Craig
 Other Sources: ...
 Date Created: 9/9/2024
-Last Modified: 9/9/2024
+Last Modified: 9/10/2024
 """
 
 import copy
@@ -25,7 +25,7 @@ class Board:
 
     # print the board
     def printBoard(self):        
-        print("   A B C D E F G H I J\n") # print the column labels
+        print("   A B C D E F G H I J") # print the column labels
         for i in range(self.boardSize): # for each row
             if(i < 9):
                 print(i+1 , end="  ") # print the row label with two spaces to accomodate the 10th row label
@@ -34,6 +34,7 @@ class Board:
             for j in range(self.boardSize): # for each column
                 print(self.board[i][j], end=" ") # print the value of the board at that location
             print() # print a new line after each row
+        print()
     
     # check if the ship collides with another ship
     def checkShipCollision(self, newBoard, oldBoard):
@@ -98,6 +99,7 @@ class Board:
         
         ship = Ship(shipSize, shipOrientation, shipLocation) # create a new ship object with the ship's size, orientation, and location
         self.ships.append(ship) # add the ship to the list of ships
+        return True
     
     # check if a ship has been hit
     def checkHit(self, missileLocation):
