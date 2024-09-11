@@ -20,15 +20,16 @@ def get_ship_size(num_ships):
 def main():
     print("Welcome to Battleship!")
 
-    # Create our players
-    p1 = Player("Player 1")
-    p2 = Player("Player 2")
-
     # Determine the number of ships
     num_ships = int(input("Please Enter the number of ships (between 1-5):")) # User input for number of ships
     while num_ships < 1 or num_ships > 5: # Check if the number of ships is valid
         print("Invalid number of ships. Please enter a number between 1 and 5.") 
         num_ships = int(input("Please Enter the number of ships (between 1-5):")) # Ask for input again
+
+    # Moved to after num_ships is defined due to how board.py is structured
+    # Create our players
+    p1 = Player("Player 1", num_ships)
+    p2 = Player("Player 2", num_ships)
 
     # Get the ship sizes
     ship_sizes = get_ship_size(num_ships)

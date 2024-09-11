@@ -12,13 +12,14 @@ from board import Board
 from ship import Ship
 
 class Player:
-    def __init__(self, name):
+    def __init__(self, name, num_ships):
         self.name = name
-        self.board = Board()
+        self.board = Board(num_ships)
         self.ships = []
 
     # Place the ships on the board
     def place_ships(self, ship_sizes): # need to actually implement this
+        self.board = Board(len(ship_sizes))
         for size in ship_sizes: # Loop through all ship sizes
             # need to pick the orientation and position of the ship
             # dont actually know how to do this yet
