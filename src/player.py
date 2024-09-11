@@ -26,49 +26,57 @@ class Player:
     # Place the ships on the board
     def place_ships(self): # need to actually implement this
         for ship in range(self.shipCount): # Loop through all ship sizes
+            # clear the screen
+            self.cls()
+
+            # print the board
+            self.board.printBoard()
             
             shipLocation = list() # Initialize the ship location
             shipOrientation = "" # Initialize the ship orientation
             while(self.board.addShip(ship+1, shipOrientation, shipLocation) == False):
                 # clear the screen
-                self.cls()
+                # self.cls()
                 
                 # clear location
                 shipLocation.clear()
                 
                 inputValid = False # Initialize the input valid flag
                 # print the board
-                self.board.printBoard()
+                # self.board.printBoard()
                 
                 if(self.board.getErr() != ""):
-                    print(f"\nError: {self.board.getErr()}\n")
+                    print(f"{self.board.getErr()}")
                     self.board.clearErr()
                 
-                while(inputValid == False):
-                    # starting at getting ship's location
-                    print(f"Placing ship of size {ship+1} at location (ex: \"F4\"):", end=" ") # Print the size of the ship the player is placing
-                    shipLocationString = input() # Get the location of the ship
-                    
-                    # check if the location is valid
-                    if(len(shipLocationString) < 2 or len(shipLocationString) > 3):
-                        print("Invalid input. Please enter a letter and a number (ex: \"F4\")")
-                        continue
-                    
-                    # append the location to the list
-                    shipLocation.append(shipLocationString[0]) # add the letter to the location
+                # while(inputValid == False):
+                # starting at getting ship's location
+                print(f"Placing ship of size {ship+1} at location (ex: \"F4\"):", end=" ") # Print the size of the ship the player is placing
+                shipLocationString = input() # Get the location of the ship
+                
+                # check if the location is valid
+                # if(len(shipLocationString) < 2 or len(shipLocationString) > 3):
+                #     print("Invalid input. Please enter a letter and a number (ex: \"F4\")")
+                #     continue
+                
+                # append the location to the list
+                shipLocation.append(shipLocationString[0]) # add the letter to the location
+                try:
                     shipLocation.append(int(shipLocationString[1:])) # add the number to the location
-                    
-                    # moving on to orientation
-                    print("Placing ship horizontally or vertically (h/v):", end=" ") # Ask the player if the ship is horizontal or vertical
-                    shipOrientation = input() # Get the orientation of the ship
-                    
-                    # check if the orientation is valid
-                    if(shipOrientation != "h" and shipOrientation != "v"):
-                        print("Invalid input. Please enter h or v.")
-                        continue
-                    
-                    # if we make it here, the input is valid
-                    inputValid = True
+                except:
+                    shipLocation.append(0)
+                
+                # moving on to orientation
+                print("Placing ship horizontally or vertically (h/v):", end=" ") # Ask the player if the ship is horizontal or vertical
+                shipOrientation = input() # Get the orientation of the ship
+                
+                # # check if the orientation is valid
+                # if(shipOrientation != "h" and shipOrientation != "v"):
+                #     print("Invalid input. Please enter h or v.")
+                #     continue
+                
+                # if we make it here, the input is valid
+                inputValid = True
             
 
     def attack_opponent(self, opponent):
@@ -89,7 +97,7 @@ class Player:
             
             # check if there was an error
             if(opponent.board.getErr() != ""):
-                print(f"\nError: {opponent.board.getErr()}\n")
+                print(f"{opponent.board.getErr()}")
                 opponent.board.clearErr()
             
             inputValid = False # Initialize the input valid flag

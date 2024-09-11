@@ -32,7 +32,7 @@ class Board:
 
     # print the board
     def printBoard(self):        
-        print("   A B C D E F G H I J\n") # print the column labels
+        print("   A B C D E F G H I J") # print the column labels
         for i in range(self.boardSize): # for each row
             if(i < 9):
                 print(i+1 , end="  ") # print the row label with two spaces to accomodate the 10th row label
@@ -74,21 +74,29 @@ class Board:
     # checks addShip() inputs
     def sanitizeAddShipArgs(self, shipSize, shipOrientation, shipLocation):
         if(shipSize < 1 or shipSize > 5):
-            err = "Invalid ship size. Please enter a number between 1 and 5."
-            return False
-        if(shipOrientation != "v" and shipOrientation != "h"):
-            err = "Invalid ship orientation. Please enter h or v."
+            self.err = "Invalid ship size. Please enter a number between 1 and 5."
             return False
         if(len(shipLocation) != 2):
-            err = "Invalid ship location. Please enter a letter and a number (ex: \"F4\")"
+            self.err = "Invalid ship location. Please use the format \"<letter><number>\" (ex: \"F4\")"
             return False
-        
         columnNum = self.columnLabelToNumber(shipLocation[0])
+        col_err = False
+        row_err = False
         if(columnNum < 1 or columnNum > 10):
-            err = "Invalid ship location. Please use the format \"<letter><number>\" (ex: \"F4\")"
-            return False
+            col_err = True
         if(shipLocation[1] < 1 or shipLocation[1] > 10):
-            err = "Invalid ship location. Please use the format \"<letter><number>\" (ex: \"F4\")"
+            row_err = True
+        if (col_err and row_err):
+            self.err = "Invalid ship location. Row and column out of bounds (A-J) and (1-10)"
+            return False
+        if (row_err):
+            self.err = "Invalid ship location. Row out of bounds (1-10)"
+            return False
+        if (col_err):
+            self.err = "Invalid ship location. Column out of bounds (A-J)"
+            return False
+        if(shipOrientation != "v" and shipOrientation != "h"):
+            self.err = "Invalid ship orientation. Please enter h or v."
             return False
         
         return True
@@ -105,7 +113,7 @@ class Board:
         if shipOrientation == "v":
             # check if the ship collides with the edge of the board
             if(self.checkBoardCollision(shipSize, shipOrientation, shipLocation)):
-                err = "Ship collides with the edge of the board. Please place the ship in a different location."
+                self.err = "Ship collides with the edge of the board. Please place the ship in a different location."
                 return False
             # add the ship to the tempBoard
             for i in range(shipSize): # for each part of the ship
@@ -115,7 +123,7 @@ class Board:
         elif shipOrientation == "h":
             # check if the ship collides with the edge of the board
             if(self.checkBoardCollision(shipSize, shipOrientation, shipLocation)):
-                err = "Ship collides with the edge of the board. Please place the ship in a different location."
+                self.err = "Ship collides with the edge of the board. Please place the ship in a different location."
                 return False
             # add the ship to the tempBoard
             for i in range(shipSize): # for each part of the ship
@@ -123,7 +131,7 @@ class Board:
             
         # check if the ship collides with another ship
         if(self.checkShipCollision(self.board, tempBoard)):
-            err = "Ship collides with another ship. Please place the ship in a different location."
+            self.err = "Ship collides with another ship. Please place the ship in a different location."
             return False
         
         # after checking for collisions, concatenate update board
@@ -160,15 +168,15 @@ class Board:
     # checks attack() inputs
     def sanitizeAttackArgs(self, missileLocation):
         if(len(missileLocation) != 2):
-            err = "Invalid attack location. Please enter a letter and a number (ex: \"F4\")"
+            self.err = "Invalid attack location. Please enter a letter and a number (ex: \"F4\")"
             return False
         
         columnNum = self.columnLabelToNumber(missileLocation[0])
         if(columnNum < 1 or columnNum > 10):
-            err = "Invalid attack location. Please use the format \"<letter><number>\" (ex: \"F4\")"
+            self.err = "Invalid attack location. Please use the format \"<letter><number>\" (ex: \"F4\")"
             return False
         if(missileLocation[1] < 1 or missileLocation[1] > 10):
-            err = "Invalid attack location. Please use the format \"<letter><number>\" (ex: \"F4\")"
+            self.err = "Invalid attack location. Please use the format \"<letter><number>\" (ex: \"F4\")"
             return False
         
         return True
@@ -181,7 +189,7 @@ class Board:
             return False
         
         if(self.checkDuplicateAttack(missileLocation)): # check if the attack is a duplicate
-            err = "Duplicate attack! Please choose a different location."
+            self.err = "Duplicate attack! Please choose a different location."
             return False # return that the attack is a duplicate
         
         if(self.checkHit(missileLocation)): # check if the attack is a hit
