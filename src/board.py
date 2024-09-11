@@ -1,7 +1,7 @@
 """
 Name: board.py
 Description: This is the board class, information to be added later
-Authors: Carson Treece, Zachary Craig
+Authors: Carson Treece, Zachary Craig, Joshua Park
 Other Sources: ...
 Date Created: 9/9/2024
 Last Modified: 9/10/2024
@@ -17,6 +17,13 @@ class Board:
         self.attackBoard = self.createBoard(10) # creates the attack board
         self.ships = list() # initialize the list of ships
         self.shipCount = shipCount # define the number of ships
+        self.err = "" # initialize the error message
+        
+    def getErr(self):
+        return self.err
+    
+    def clearErr(self):
+        self.err = ""
     
     # creates the board
     def createBoard(self, boardSize):
@@ -25,7 +32,7 @@ class Board:
 
     # print the board
     def printBoard(self):        
-        print("   A B C D E F G H I J") # print the column labels
+        print("   A B C D E F G H I J\n") # print the column labels
         for i in range(self.boardSize): # for each row
             if(i < 9):
                 print(i+1 , end="  ") # print the row label with two spaces to accomodate the 10th row label
@@ -34,7 +41,6 @@ class Board:
             for j in range(self.boardSize): # for each column
                 print(self.board[i][j], end=" ") # print the value of the board at that location
             print() # print a new line after each row
-        print()
     
     # check if the ship collides with another ship
     def checkShipCollision(self, newBoard, oldBoard):
@@ -46,9 +52,10 @@ class Board:
     
     # column label to number
     def columnLabelToNumber(self, columnLabel):
-        columnLabel = columnLabel.lower() # convert the column label to lowercase
-        num = ord(columnLabel) - 96 # converts the lowercase column letter to its unicode value and subtracts 96 to get the column number
-        return num
+        return ord(columnLabel.lower()) - 96 # converts the lowercase column letter to its unicode value and subtracts 96 to get the column number
+        # columnLabel = columnLabel.lower() # convert the column label to lowercase
+        # num = ord(columnLabel) - 96 # converts the lowercase column letter to its unicode value and subtracts 96 to get the column number
+        # return num
 
     # check if the ship collides with the edge of the board
     def checkBoardCollision(self, shipSize, shipOrientation, shipLocation):
@@ -56,21 +63,49 @@ class Board:
             if(shipLocation[1] + shipSize - 1 > self.boardSize): # checks if the ship head location plus the size of the ship is greater than the board size
                 return True
         elif(shipOrientation == "h"): # checks if the ship is horizontal
+            columnNumPrint = self.columnLabelToNumber(shipLocation[0])
+            shipSizePrint = shipSize
+            shipLocationPrint = shipLocation
+            printString = columnNumPrint + shipSizePrint - 1
             if(self.columnLabelToNumber(shipLocation[0]) + shipSize - 1 > self.boardSize): # checks if the ship head location plus the size of the ship is greater than the board size
                 return True
         return False
     
+    # checks addShip() inputs
+    def sanitizeAddShipArgs(self, shipSize, shipOrientation, shipLocation):
+        if(shipSize < 1 or shipSize > 5):
+            err = "Invalid ship size. Please enter a number between 1 and 5."
+            return False
+        if(shipOrientation != "v" and shipOrientation != "h"):
+            err = "Invalid ship orientation. Please enter h or v."
+            return False
+        if(len(shipLocation) != 2):
+            err = "Invalid ship location. Please enter a letter and a number (ex: \"F4\")"
+            return False
+        
+        columnNum = self.columnLabelToNumber(shipLocation[0])
+        if(columnNum < 1 or columnNum > 10):
+            err = "Invalid ship location. Please use the format \"<letter><number>\" (ex: \"F4\")"
+            return False
+        if(shipLocation[1] < 1 or shipLocation[1] > 10):
+            err = "Invalid ship location. Please use the format \"<letter><number>\" (ex: \"F4\")"
+            return False
+        
+        return True
+    
     # add a ship to the board
     def addShip(self, shipSize, shipOrientation, shipLocation):
+        if(self.sanitizeAddShipArgs(shipSize, shipOrientation, shipLocation) == False):
+            return False
+        
         # creates a new array for the ship to reference against the current board
         tempBoard = self.createBoard(self.boardSize)
-        
         
         # check if the ship is vertical
         if shipOrientation == "v":
             # check if the ship collides with the edge of the board
             if(self.checkBoardCollision(shipSize, shipOrientation, shipLocation)):
-                print("Ship collides with the edge of the board. Please place the ship in a different location.")
+                err = "Ship collides with the edge of the board. Please place the ship in a different location."
                 return False
             # add the ship to the tempBoard
             for i in range(shipSize): # for each part of the ship
@@ -80,7 +115,7 @@ class Board:
         elif shipOrientation == "h":
             # check if the ship collides with the edge of the board
             if(self.checkBoardCollision(shipSize, shipOrientation, shipLocation)):
-                print("Ship collides with the edge of the board. Please place the ship in a different location.")
+                err = "Ship collides with the edge of the board. Please place the ship in a different location."
                 return False
             # add the ship to the tempBoard
             for i in range(shipSize): # for each part of the ship
@@ -88,7 +123,7 @@ class Board:
             
         # check if the ship collides with another ship
         if(self.checkShipCollision(self.board, tempBoard)):
-            print("Ship collides with another ship. Please place the ship in a different location.")
+            err = "Ship collides with another ship. Please place the ship in a different location."
             return False
         
         # after checking for collisions, concatenate update board
@@ -99,7 +134,8 @@ class Board:
         
         ship = Ship(shipSize, shipOrientation, shipLocation) # create a new ship object with the ship's size, orientation, and location
         self.ships.append(ship) # add the ship to the list of ships
-        return True
+        
+        return True # return that the ship has been successfully added to the board
     
     # check if a ship has been hit
     def checkHit(self, missileLocation):
@@ -121,12 +157,31 @@ class Board:
             return True # return that the ship is sunk
         return False # return that the ship is not sunk
     
+    # checks attack() inputs
+    def sanitizeAttackArgs(self, missileLocation):
+        if(len(missileLocation) != 2):
+            err = "Invalid attack location. Please enter a letter and a number (ex: \"F4\")"
+            return False
+        
+        columnNum = self.columnLabelToNumber(missileLocation[0])
+        if(columnNum < 1 or columnNum > 10):
+            err = "Invalid attack location. Please use the format \"<letter><number>\" (ex: \"F4\")"
+            return False
+        if(missileLocation[1] < 1 or missileLocation[1] > 10):
+            err = "Invalid attack location. Please use the format \"<letter><number>\" (ex: \"F4\")"
+            return False
+        
+        return True
+    
     # method to initiate an attack
     # returns true if the attack action was successful
     # returns false if the attack was a duplicate to allow the player to choose a different location
     def attack(self, missileLocation):
+        if(self.sanitizeAttackArgs(missileLocation) == False):
+            return False
+        
         if(self.checkDuplicateAttack(missileLocation)): # check if the attack is a duplicate
-            print("Duplicate attack! Please choose a different location.") # print that the attack is a duplicate
+            err = "Duplicate attack! Please choose a different location."
             return False # return that the attack is a duplicate
         
         if(self.checkHit(missileLocation)): # check if the attack is a hit
@@ -138,9 +193,14 @@ class Board:
                 print("Ship sunk!") # print that the ship is sunk
             else: # if the ship is not sunk
                 print("Hit!") # print that the attack is a hit
+            
+            self.attackBoard[missileLocation[1]-1][self.columnLabelToNumber(missileLocation[0])-1] = "H" # update the attack board with a hit
+            
         else: # if the attack is a miss
             self.board[missileLocation[1]-1][self.columnLabelToNumber(missileLocation[0])-1] = "M" # update the board with a miss
             print("Miss!") # print that the attack is a miss
+            
+            self.attackBoard[missileLocation[1]-1][self.columnLabelToNumber(missileLocation[0])-1] = "M" # update the attack board with a miss
 
         return True # return that the attack action was successful
             
