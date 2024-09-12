@@ -7,6 +7,8 @@
 
 **Date:** 9/11/2024
 
-**Hours spent on project:** 2 hours
+**Hours spent on project:** 3.5 hours
 
-**Brief summary of what you did:** Fixed a bug in place_ships where an error would print every time the player was prompted to place a ship. Think I bug tested it but if I broke it more sorry.
+**Brief summary of what you did:** Fixed a bug in place_ships where an error would print every time the player was prompted to place a ship. Think I bug tested it but if I broke it more sorry. 
+
+                                   Fixed a similar bug from place_ships in attack_opponent. We should no longer get error messages before inputing what spot on the grid you want to either place your ship or attack.

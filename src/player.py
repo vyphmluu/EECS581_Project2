@@ -69,52 +69,59 @@ class Player:
 
     def attack_opponent(self, opponent):
         attackLocation = list() # Initialize the attack location
-        while(opponent.board.attack(attackLocation) == False):
-            # clear the screen
-            self.cls()
+        inputValid = False # Initialize the input variable
+
+        while not inputValid or opponent.board.attack(attackLocation) == False:
             
-            # need to print the attack board
+            self.cls() # clear the screen
+
+            # print the attack board and player's board
             print("Attack board:")
             opponent.board.printAttackBoard()
-            # print the player's board
             print("\n\nYour board:")
             self.board.printBoard()
-            
-            # clear location
-            attackLocation.clear()
-            
+
+            attackLocation.clear() # clear location
+
             # check if there was an error
-            if(opponent.board.getErr() != ""):
+            if opponent.board.getErr() != "":
                 print(f"{opponent.board.getErr()}")
                 opponent.board.clearErr()
-            
-            inputValid = False # Initialize the input valid flag
-            while(inputValid == False):
-                # get the attack location
-                print("Enter the location to attack (ex: \"F4\"):", end=" ") # Ask the player for the location to attack
-                attackLocationString = input()
-            
-                if(len(attackLocationString) < 2 or len(attackLocationString) > 3):
-                    print("Invalid input. Please enter a letter and a number (ex: \"F4\")")
-                    continue
-                
-                attackLocation.append(attackLocationString[0]) # add the letter to the location
-                attackLocation.append(int(attackLocationString[1:])) # add the number to the location
-                
-                # if we make it here, the input is valid
+
+            # get the attack location
+            print("Enter the location to attack (ex: \"F4\"): ", end=" ")
+            attackLocationString = input().upper()
+
+            # Validate the attack location input
+            if len(attackLocationString) < 2 or len(attackLocationString) > 3:
+                print("Invalid input. Please enter a letter and a number (ex: \"F4\")")
+                continue
+
+            # Append the column (letter) to attackLocation
+            attackLocation.append(attackLocationString[0])
+            try:
+                # Append the row (number) to attackLocation and check if it's a valid number
+                attackLocation.append(int(attackLocationString[1:]))
                 inputValid = True
+            except ValueError:
+                print("Invalid number for the row. Please try again.")
+                continue
+
+            self.cls() # clear the screen
             
-            self.cls()
-        
+            # If attack is successful, break out of loop
+            if opponent.board.attack(attackLocation):
+                inputValid = True # Attack is valid
+                break
+            else:
+                inputValid = False # Attack failed, re-enter location
+
         # show updated attack board
         print("")
         opponent.board.printAttackBoard()
         print("Press enter to continue", end="")
         input()
-            
-                
-                
-                
 
+            
     def is_defeated(self): # need to implement this
         return self.board.checkGameOver() # check if the player is defeated by checking if all ships are sunk
