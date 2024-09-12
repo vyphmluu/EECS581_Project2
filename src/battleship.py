@@ -5,13 +5,14 @@ Description: This is the main initialization file for the game, we are creating 
 Authors: Carson Treece, Zachary Craig, Joshua Park
 Other Sources: ...
 Date Created: 9/9/2024
-Last Modified: 9/10/2024
+Last Modified: 9/12/2024
 """
 
 from player import Player
 from board import Board
 from ship import Ship
 import os
+import re
 
 
 def cls():
@@ -26,29 +27,32 @@ def main():
     cls()
     
     print("Welcome to Battleship!")
+    
+    # initialize the ship counts
+    player1ShipCount = 0
+    player2ShipCount = 0
+    
+    # psuedo do-while loop
+    while(True):
+        userInput = input("Player 1, Please Enter the number of ships (between 1-5): ") # Ask for input 
 
-    # This code is if both players have the same number of ships
-    # # Determine the number of ships
-    # num_ships = int(input("Please Enter the number of ships (between 1-5):")) # User input for number of ships
-    # while num_ships < 1 or num_ships > 5: # Check if the number of ships is valid
-    #     print("Invalid number of ships. Please enter a number between 1 and 5.") 
-    #     num_ships = int(input("Please Enter the number of ships (between 1-5):")) # Ask for input again
-    #
-    # # Get the ship sizes
-    # ship_sizes = get_ship_size(num_ships)
-    
-    # This code is if both players have different number of ships
-    # Determine the number of ships for player 1
-    player1ShipCount = int(input("Player 1, Please Enter the number of ships (between 1-5):")) # User input for number of ships
-    while(player1ShipCount < 1 or player1ShipCount > 5): # Check if the number of ships is valid
-        print("Invalid number of ships. Please enter a number between 1 and 5.")
-        player1ShipCount = int(input("Player 1, Please Enter the number of ships (between 1-5):")) # Ask for input again
-    
-    # Determine the number of ships for player 2
-    player2ShipCount = int(input("Player 2, Please Enter the number of ships (between 1-5):")) # User input for number of ships
-    while(player2ShipCount < 1 or player2ShipCount > 5): # Check if the number of ships is valid
-        print("Invalid number of ships. Please enter a number between 1 and 5.")
-        player2ShipCount = int(input("Player 2, Please Enter the number of ships (between 1-5):")) # Ask for input again
+        if(re.match("^[12345]$", userInput)): # Check if the input is a number between 1 and 5
+            player1ShipCount = int(userInput) # Convert the input to an integer
+            break # Exit the loop
+        else: 
+            print("Invalid input. Please enter a number between 1 and 5.")
+            continue
+
+    # psuedo do-while loop
+    while(True):
+        userInput = input("Player 2, Please Enter the number of ships (between 1-5): ") # Ask for input 
+
+        if(re.match("^[12345]$", userInput)): # Check if the input is a number between 1 and 5
+            player2ShipCount = int(userInput) # Convert the input to an integer
+            break # Exit the loop
+        else:
+            print("Invalid input. Please enter a number between 1 and 5.")
+            continue
 
 
     # Create our players
