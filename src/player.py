@@ -24,59 +24,47 @@ class Player:
 
 
     # Place the ships on the board
-    def place_ships(self): # need to actually implement this
+    def place_ships(self): 
         for ship in range(self.shipCount): # Loop through all ship sizes
             # clear the screen
             self.cls()
 
             # print the board
             self.board.printBoard()
+
+            shipLocation = list()  # Initialize the ship location
+            shipOrientation = ""  # Initialize the ship orientation
             
-            shipLocation = list() # Initialize the ship location
-            shipOrientation = "" # Initialize the ship orientation
-            while(self.board.addShip(ship+1, shipOrientation, shipLocation) == False):
-                # clear the screen
-                # self.cls()
-                
+            # We need to get the input beefore calling addShip to avoid the error message
+            inputValid = False  # Initialize the input variable
+            while not inputValid:
+
                 # clear location
                 shipLocation.clear()
-                
-                inputValid = False # Initialize the input valid flag
-                # print the board
-                # self.board.printBoard()
-                
-                if(self.board.getErr() != ""):
+
+                if self.board.getErr() != "":  # Only display the error if it exists
                     print(f"{self.board.getErr()}")
                     self.board.clearErr()
-                
-                # while(inputValid == False):
-                # starting at getting ship's location
-                print(f"Placing ship of size {ship+1} at location (ex: \"F4\"):", end=" ") # Print the size of the ship the player is placing
-                shipLocationString = input() # Get the location of the ship
-                
-                # check if the location is valid
-                # if(len(shipLocationString) < 2 or len(shipLocationString) > 3):
-                #     print("Invalid input. Please enter a letter and a number (ex: \"F4\")")
-                #     continue
-                
-                # append the location to the list
-                shipLocation.append(shipLocationString[0]) # add the letter to the location
+
+                # Get the location of the ship
+                print(f"Placing ship of size {ship+1} at location (ex: \"F4\"):", end=" ")  
+                shipLocationString = input()
+
+                # Append the location to the list
+                shipLocation.append(shipLocationString[0])  # add the letter to the location
                 try:
-                    shipLocation.append(int(shipLocationString[1:])) # add the number to the location
+                    shipLocation.append(int(shipLocationString[1:]))  # add the number to the location
                 except:
-                    shipLocation.append(0)
-                
-                # moving on to orientation
-                print("Placing ship horizontally or vertically (h/v):", end=" ") # Ask the player if the ship is horizontal or vertical
-                shipOrientation = input() # Get the orientation of the ship
-                
-                # # check if the orientation is valid
-                # if(shipOrientation != "h" and shipOrientation != "v"):
-                #     print("Invalid input. Please enter h or v.")
-                #     continue
-                
-                # if we make it here, the input is valid
-                inputValid = True
+                    print("Invalid number for the row. Please try again.")
+                    continue  # Restart the loop on invalid number input
+
+                # Get the ship's orientation
+                print("Placing ship horizontally or vertically (h/v):", end=" ")
+                shipOrientation = input().lower()
+
+                # Attempt to place the ship after gathering input
+                inputValid = self.board.addShip(ship + 1, shipOrientation, shipLocation)
+
             
 
     def attack_opponent(self, opponent):
