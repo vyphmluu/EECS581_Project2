@@ -40,6 +40,7 @@ def main():
             player1ShipCount = int(userInput) # Convert the input to an integer
             break # Exit the loop
         else: 
+            cls()
             print("Invalid input. Please enter a number between 1 and 5.")
             continue
 
@@ -51,6 +52,7 @@ def main():
             player2ShipCount = int(userInput) # Convert the input to an integer
             break # Exit the loop
         else:
+            cls()
             print("Invalid input. Please enter a number between 1 and 5.")
             continue
 
