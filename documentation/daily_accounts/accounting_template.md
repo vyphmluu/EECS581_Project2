@@ -1,6 +1,6 @@
 # Template for Day-by-Day Accounting
-**Date:** mm/dd/yyyy
+## mm/dd/yyyy
 
-**Hours spent on project:**
+**Time spent on project:** `x` hour(s) `y` minutes
 
 **Brief summary of what you did:**

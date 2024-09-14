@@ -1,5 +1,5 @@
-**Date:**
+## mm/dd/yyyy
 
-**Hours spent on project:**
+**Time spent on project:**
 
 **Brief summary of what you did:**
