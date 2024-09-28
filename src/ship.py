@@ -41,14 +41,22 @@ class Ship:
     
     # NEW function to return the list of all coordinates the ship occupies
     def get_coordinates(self):
+        # Initialize an empty list to store the ship's coordinates
         coordinates = []
-        row, col = self.location[1] - 1, ord(self.location[0].upper()) - 65  # Get starting position
         
-        if self.orientation == 'v':  # vertical orientation
-            for i in range(self.size):
-                coordinates.append((self.location[0], self.location[1] + i))  # Add each vertical coordinate
-        else:  # horizontal orientation
-            for i in range(self.size):
-                coordinates.append((chr(ord(self.location[0].upper()) + i), self.location[1]))  # Add each horizontal coordinate
+        # Get the starting row and column from the location
+        row, col = self.location[1] - 1, ord(self.location[0].upper()) - 65  # Convert the letter to an index
         
-        return coordinates  # return the list of coordinates
+        if self.orientation == 'v':  # If the ship is placed vertically
+            # Add the coordinates vertically based on the ship size
+            for i in range(self.size):
+                # Append the row with the same column (because it's vertical)
+                coordinates.append((self.location[0], self.location[1] + i))  
+        else:  # If the ship is placed horizontally
+            # Add the coordinates horizontally based on the ship size
+            for i in range(self.size):
+                # Append the column with the same row (because it's horizontal)
+                coordinates.append((chr(ord(self.location[0].upper()) + i), self.location[1]))  
+        
+        # Return the list of all coordinates occupied by the ship
+        return coordinates
