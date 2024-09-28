@@ -136,21 +136,22 @@ class Player:
 
 class AIPlayer(Player):
     def __init__(self, name, shipCount, difficulty):
+        # Initialize the AI player
         super().__init__(name, shipCount)
-        self.difficulty = difficulty
+        self.difficulty = difficulty  # Easy, Medium, or Hard difficulty
 
     def place_ships(self):
-        # AI randomly places ships automatically
-        orientations = ['h', 'v']
+        # AI automatically places ships randomly
+        orientations = ['h', 'v']  # Possible orientations
         for ship in range(self.shipCount):
             while True:
-                shipLocation = [random.choice("ABCDEFGHIJ"), random.randint(1, 10)]
-                shipOrientation = random.choice(orientations)
+                shipLocation = [random.choice("ABCDEFGHIJ"), random.randint(1, 10)]  # Random position
+                shipOrientation = random.choice(orientations)  # Random orientation
                 if self.board.addShip(ship + 1, shipOrientation, shipLocation):
-                    break
+                    break  # If valid, place the ship and break the loop
 
     def take_turn(self, opponent):
-        # AI takes a turn based on difficulty
+        # AI takes its turn based on difficulty
         if self.difficulty == "easy":
             self.random_attack(opponent)
         elif self.difficulty == "medium":
@@ -159,21 +160,21 @@ class AIPlayer(Player):
             self.cheat_attack(opponent)
 
     def random_attack(self, opponent):
-        # AI attacks randomly
+        # Easy AI: attack randomly
         attackLocation = [random.choice("ABCDEFGHIJ"), random.randint(1, 10)]
-        while not opponent.board.attack(attackLocation):
+        while not opponent.board.attack(attackLocation):  # Keep attacking until valid
             attackLocation = [random.choice("ABCDEFGHIJ"), random.randint(1, 10)]
         print(f"AI attacks {attackLocation[0]}{attackLocation[1]}")
-    
+
     def medium_attack(self, opponent):
-        # Medium AI starts randomly, then targets adjacent cells after a hit
+        # Medium AI: random until hit, then target around
         attackLocation = [random.choice("ABCDEFGHIJ"), random.randint(1, 10)]
         while not opponent.board.attack(attackLocation):
             attackLocation = [random.choice("ABCDEFGHIJ"), random.randint(1, 10)]
         print(f"AI attacks {attackLocation[0]}{attackLocation[1]}")
-    
+
     def cheat_attack(self, opponent):
-        # Hard AI knows exactly where the ships are
+        # Hard AI: knows the exact locations of ships
         for ship in opponent.board.ships:
             for part in ship.get_coordinates():
                 if opponent.board.attack(part):
