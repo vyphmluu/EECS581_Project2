@@ -84,7 +84,7 @@ class Player:
         inputValid = False  # Initialize the input variable
 
         while not inputValid or opponent.board.attack(attackLocation) == False:
-            
+
             self.cls()  # clear the screen
 
             # print the attack board and player's board
@@ -136,45 +136,68 @@ class Player:
 
 class AIPlayer(Player):
     def __init__(self, name, shipCount, difficulty):
-        # Initialize the AI player
         super().__init__(name, shipCount)
-        self.difficulty = difficulty  # Easy, Medium, or Hard difficulty
+        self.difficulty = difficulty
+        self.last_hit = None
+        self.possible_targets = []
 
     def place_ships(self):
-        # AI automatically places ships randomly
-        orientations = ['h', 'v']  # Possible orientations
+        # AI randomly places ships automatically
+        orientations = ['h', 'v']
         for ship in range(self.shipCount):
             while True:
-                shipLocation = [random.choice("ABCDEFGHIJ"), random.randint(1, 10)]  # Random position
-                shipOrientation = random.choice(orientations)  # Random orientation
+                shipLocation = [random.choice("ABCDEFGHIJ"), random.randint(1, 10)]
+                shipOrientation = random.choice(orientations)
                 if self.board.addShip(ship + 1, shipOrientation, shipLocation):
-                    break  # If valid, place the ship and break the loop
+                    break
 
     def take_turn(self, opponent):
-        # AI takes its turn based on difficulty
+        # AI takes a turn based on difficulty
         if self.difficulty == "easy":
-            self.random_attack(opponent)
+            self.easy_attack(opponent)
         elif self.difficulty == "medium":
             self.medium_attack(opponent)
         elif self.difficulty == "hard":
-            self.cheat_attack(opponent)
+            self.hard_attack(opponent)
+        input()
 
-    def random_attack(self, opponent):
-        # Easy AI: attack randomly
-        attackLocation = [random.choice("ABCDEFGHIJ"), random.randint(1, 10)]
-        while not opponent.board.attack(attackLocation):  # Keep attacking until valid
-            attackLocation = [random.choice("ABCDEFGHIJ"), random.randint(1, 10)]
-        print(f"AI attacks {attackLocation[0]}{attackLocation[1]}")
-
-    def medium_attack(self, opponent):
-        # Medium AI: random until hit, then target around
+    def easy_attack(self, opponent):
+        # AI attacks randomly
         attackLocation = [random.choice("ABCDEFGHIJ"), random.randint(1, 10)]
         while not opponent.board.attack(attackLocation):
             attackLocation = [random.choice("ABCDEFGHIJ"), random.randint(1, 10)]
         print(f"AI attacks {attackLocation[0]}{attackLocation[1]}")
 
-    def cheat_attack(self, opponent):
-        # Hard AI: knows the exact locations of ships
+    def medium_attack(self, opponent):
+        # Medium AI starts randomly, then targets adjacent cells after a hit
+        if self.possible_targets:
+            attackLocation = self.possible_targets.pop(0)
+        else:
+            attackLocation = [random.choice("ABCDEFGHIJ"), random.randint(1, 10)]
+
+        if opponent.board.attack(attackLocation):
+            if(not opponent.board.hitLocation(attackLocation)):
+                print(f"AI misses at {attackLocation[0]}{attackLocation[1]}")
+                self.last_hit = None
+                print(f'',self.possible_targets)
+                return
+            self.last_hit = attackLocation
+            print(f"AI hits at {attackLocation[0]}{attackLocation[1]}")
+            if(self.board.sunkShip(attackLocation)):
+                self.possible_targets = []
+            row, col = attackLocation
+            if col > 1:  # Left
+                self.possible_targets.append([row, col - 1])
+            if col < 10:  # Right
+                self.possible_targets.append([row, col + 1])
+            if row > 'A':  # Up
+                self.possible_targets.append([chr(ord(row) - 1), col])
+            if row < 'J':  # Down
+                self.possible_targets.append([chr(ord(row) + 1), col])
+            print(f'',self.possible_targets)
+
+    def hard_attack(self, opponent):
+        # Hard AI knows exactly where the ships are
         for ship in opponent.board.ships:
             for part in ship.get_coordinates():
                 if opponent.board.attack(part):
