@@ -26,92 +26,101 @@ def get_ship_size(num_ships):
 
 # Main loop for the game
 def main():
+    # Main loop for the Battleship game
     cls()
-
     print("Welcome to Battleship!")
 
-    # Initialize the ship counts
+    # Initialize ship counts
     player1ShipCount = 0
-    player2ShipCount = 0
 
-    # Ask Player 1 for number of ships
+    # Ask Player 1 to choose the number of ships
     while True:
-        userInput = input("Player 1, Please Enter the number of ships (between 1-5): ")  # Ask for input
-
-        if re.match("^[12345]$", userInput):  # Check if the input is a number between 1 and 5
-            player1ShipCount = int(userInput)  # Convert the input to an integer
-            break  # Exit the loop
+        userInput = input("Player 1, Please Enter the number of ships (between 1-5): ")
+        if re.match("^[12345]$", userInput):
+            player1ShipCount = int(userInput)
+            break
         else:
             cls()
             print("Invalid input. Please enter a number between 1 and 5.")
-            continue
 
-    # Ask Player 2 or AI opponent for number of ships
-    opponent_type = input("Would you like to play against a 'human' or 'AI' opponent?: ").lower()
+    # Ask if Player 2 is a human or AI
+    while True:
+        opponent_type = input("Would you like to play against a 'human' or 'AI' opponent?: ").lower()
+        if opponent_type in ['human', 'ai']:  # Only accept 'human' or 'ai'
+            break  # Valid input, exit the loop
+        else:
+            cls()
+            print("Invalid choice. Please type 'human' or 'AI'.")
 
-    if opponent_type == 'human':
-        while True:
-            userInput = input("Player 2, Please Enter the number of ships (between 1-5): ")  # Ask for input
-
-            if re.match("^[12345]$", userInput):  # Check if the input is a number between 1 and 5
-                player2ShipCount = int(userInput)  # Convert the input to an integer
-                break  # Exit the loop
-            else:
-                cls()
-                print("Invalid input. Please enter a number between 1 and 5.")
-                continue
-    else:
-        # AI will automatically place ships based on the number entered by Player 1
-        player2ShipCount = player1ShipCount
-        ai_difficulty = input("Choose AI difficulty: 'easy', 'medium', 'hard': ").lower()
-
-    # Create players or AI
+    # Create Player 1
     p1 = Player("Player 1", player1ShipCount)
 
     if opponent_type == 'human':
+        # If opponent is human, prompt for Player 2's number of ships
+        while True:
+            userInput = input("Player 2, Please Enter the number of ships (between 1-5): ")
+            if re.match("^[12345]$", userInput):
+                player2ShipCount = int(userInput)
+                break
+            else:
+                cls()
+                print("Invalid input. Please enter a number between 1 and 5.")
         p2 = Player("Player 2", player2ShipCount)
+
     else:
+        # If opponent is AI, set the same number of ships for AI
+        player2ShipCount = player1ShipCount
+        while True:
+            ai_difficulty = input("Choose AI difficulty: 'easy', 'medium', 'hard': ").lower()
+            if ai_difficulty in ['easy', 'medium', 'hard']:
+                break
+            else:
+                cls()
+                print("Invalid choice. Please choose 'easy', 'medium', or 'hard'.")
+
+        # Create AI player with the same number of ships
         p2 = AIPlayer("AI", player2ShipCount, ai_difficulty)
 
     # Player 1 places their ships
     print("Player 1, please place your ships.")
     p1.place_ships()
 
-    # Player 2 (or AI) places ships
+    # AI places its ships automatically if AI is the opponent
     if opponent_type == 'human':
         print("Player 2, please place your ships.")
-        p2.place_ships()
+        p2.place_ships()  # Human Player 2 places ships
     else:
-        print(f"AI ({ai_difficulty} difficulty) is placing its ships...")
-        p2.place_ships()
+        print(f"AI ({ai_difficulty} difficulty) is placing its ships automatically...")
+        p2.place_ships()  # AI places ships automatically
 
     cls()
 
-    # Main game loop
+    # Now we start the main game loop
     while True:
         cls()
-        print("Player 1's turn.\nPlease hit enter to take your turn.", end="")
-        input()  # Pause the game for player 1
-        p1.attack_opponent(p2)  # Player 1 attacks Player 2
+        print("Player 1's turn.\nPress enter to take your turn.", end="")
+        input()  # Pause for Player 1
+        p1.attack_opponent(p2)  # Player 1 attacks
 
-        if p2.is_defeated():  # Check if Player 2 or AI is defeated
+        if p2.is_defeated():
             cls()
             print("Player 1 wins!")
             break
 
         cls()
-        print(f"{p2.name}'s turn.\nPlease hit enter to take your turn.", end="")
-        input()  # Pause the game for player 2 or AI
+        print(f"{p2.name}'s turn.\nPress enter to take your turn.", end="")
+        input()  # Pause for Player 2 or AI
 
         if opponent_type == 'human':
-            p2.attack_opponent(p1)  # Player 2 attacks Player 1
+            p2.attack_opponent(p1)  # Player 2's turn
         else:
-            p2.take_turn(p1)  # AI attacks Player 1
+            p2.take_turn(p1)  # AI's turn
 
-        if p1.is_defeated():  # Check if Player 1 is defeated
+        if p1.is_defeated():
             cls()
             print(f"{p2.name} wins!")
             break
+
 
 
 if __name__ == "__main__":
