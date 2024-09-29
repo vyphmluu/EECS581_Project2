@@ -179,7 +179,6 @@ class AIPlayer(Player):
             if(not opponent.board.hitLocation(attackLocation)):
                 print(f"AI misses at {attackLocation[0]}{attackLocation[1]}")
                 self.last_hit = None
-                print(f'',self.possible_targets)
                 return
             self.last_hit = attackLocation
             print(f"AI hits at {attackLocation[0]}{attackLocation[1]}")
@@ -194,7 +193,6 @@ class AIPlayer(Player):
                 self.possible_targets.append([chr(ord(row) - 1), col])
             if row < 'J':  # Down
                 self.possible_targets.append([chr(ord(row) + 1), col])
-            print(f'',self.possible_targets)
 
     def hard_attack(self, opponent):
         # Hard AI knows exactly where the ships are
