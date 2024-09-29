@@ -19,6 +19,7 @@ class Board:
         self.ships = list()  # initialize the list of ships
         self.shipCount = shipCount  # define the number of ships
         self.err = ""  # initialize the error message
+        self.lastShipHit = -1
         
     # function to get the last error message
     def getErr(self):
@@ -135,6 +136,7 @@ class Board:
         
         if self.checkHit(missileLocation):  # check if the attack is a hit
             damagedShip = self.board[missileLocation[1]-1][self.columnLabelToNumber(missileLocation[0])-1]-1  # get the damaged ship
+            self.lastShipHit = damagedShip
             self.board[missileLocation[1]-1][self.columnLabelToNumber(missileLocation[0])-1] = "H"  # update the board with a hit
             
             self.ships[damagedShip].hit()  # add a hit to the ship
@@ -178,3 +180,13 @@ class Board:
             for j in range(self.boardSize):  # for each column
                 print(self.attackBoard[i][j], end=" ")
             print()  # print a new line after each row
+
+    def hitLocation(self, location):
+        if(self.board[location[1]-1][self.columnLabelToNumber(location[0])-1] == 'H'):
+            return True
+        return False
+
+    def sunkShip(self, location):
+        if self.lastShipHit != -1:
+            return self.board.ships[self.lastShipHit].is_sunk()
+        return False
