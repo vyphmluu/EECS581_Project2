@@ -140,6 +140,7 @@ class AIPlayer(Player):
         self.difficulty = difficulty
         self.last_hit = None
         self.possible_targets = []
+        self.previous_attacks = set()  # Set to track previously attacked locations
 
     def place_ships(self):
         # AI randomly places ships automatically
@@ -162,37 +163,62 @@ class AIPlayer(Player):
         input()
 
     def easy_attack(self, opponent):
-        # AI attacks randomly
         attackLocation = [random.choice("ABCDEFGHIJ"), random.randint(1, 10)]
-        while not opponent.board.attack(attackLocation):
-            attackLocation = [random.choice("ABCDEFGHIJ"), random.randint(1, 10)]
-        print(f"AI attacks {attackLocation[0]}{attackLocation[1]}")
 
+        # Keep selecting a new random location until a valid (non-duplicate) one is found
+        while tuple(attackLocation) in self.previous_attacks:
+            attackLocation = [random.choice("ABCDEFGHIJ"), random.randint(1, 10)]
+
+        # Record this attack in the list of previous attacks
+        self.previous_attacks.add(tuple(attackLocation))
+
+        # Perform the attack and store the result (True = hit, False = miss)
+        result = opponent.board.attack(attackLocation)
+
+        # Print based on the attack result
+        if result:
+            print(f"AI hits at {attackLocation[0]}{attackLocation[1]}")
+        else:
+            print(f"AI misses at {attackLocation[0]}{attackLocation[1]}")
+
+
+            
     def medium_attack(self, opponent):
         # Medium AI starts randomly, then targets adjacent cells after a hit
         if self.possible_targets:
             attackLocation = self.possible_targets.pop(0)
         else:
+            # Random attack if no possible targets left
             attackLocation = [random.choice("ABCDEFGHIJ"), random.randint(1, 10)]
 
+        # Attempt to attack the chosen location
         if opponent.board.attack(attackLocation):
-            if(not opponent.board.hitLocation(attackLocation)):
+            if opponent.board.hitLocation(attackLocation):
+                print(f"AI hits at {attackLocation[0]}{attackLocation[1]}")
+                self.last_hit = attackLocation
+            else:
                 print(f"AI misses at {attackLocation[0]}{attackLocation[1]}")
-                self.last_hit = None
-                return
-            self.last_hit = attackLocation
-            print(f"AI hits at {attackLocation[0]}{attackLocation[1]}")
-            if(self.board.sunkShip(attackLocation)):
-                self.possible_targets = []
-            row, col = attackLocation
-            if col > 1:  # Left
-                self.possible_targets.append([row, col - 1])
-            if col < 10:  # Right
-                self.possible_targets.append([row, col + 1])
-            if row > 'A':  # Up
-                self.possible_targets.append([chr(ord(row) - 1), col])
-            if row < 'J':  # Down
-                self.possible_targets.append([chr(ord(row) + 1), col])
+
+                self.mark_adjacent(attackLocation, opponent)  # Add adjacent cells
+        else:
+            print(f"AI misses at {attackLocation[0]}{attackLocation[1]}")
+            self.last_hit = None
+
+    def mark_adjacent(self, hit_location, opponent):
+        row, col = hit_location
+        if col > 1:  # Left
+            self.add_target_if_valid([row, col - 1], opponent)
+        if col < 10:  # Right
+            self.add_target_if_valid([row, col + 1], opponent)
+        if row > 'A':  # Up
+            self.add_target_if_valid([chr(ord(row) - 1), col], opponent)
+        if row < 'J':  # Down
+            self.add_target_if_valid([chr(ord(row) + 1), col], opponent)
+
+    def add_target_if_valid(self, location, opponent):
+        if not opponent.board.checkDuplicateAttack(location):  # Only add if not already attacked
+            self.possible_targets.append(location)
+            
 
     def hard_attack(self, opponent):
         # Hard AI knows exactly where the ships are
