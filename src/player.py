@@ -163,11 +163,24 @@ class AIPlayer(Player):
         input()
 
     def easy_attack(self, opponent):
-        # AI attacks randomly
         attackLocation = [random.choice("ABCDEFGHIJ"), random.randint(1, 10)]
-        while not opponent.board.attack(attackLocation):
+
+        # Keep selecting a new random location until a valid (non-duplicate) one is found
+        while tuple(attackLocation) in self.previous_attacks:
             attackLocation = [random.choice("ABCDEFGHIJ"), random.randint(1, 10)]
-        print(f"AI attacks {attackLocation[0]}{attackLocation[1]}")
+
+        # Record this attack in the list of previous attacks
+        self.previous_attacks.add(tuple(attackLocation))
+
+        # Perform the attack and store the result (True = hit, False = miss)
+        opponent.board.attack(attackLocation)
+        result = opponent.board.hitLocation(attackLocation)
+
+        # Print based on the attack result
+        if result:
+            print(f"AI hits at {attackLocation[0]}{attackLocation[1]}")
+        else:
+            print(f"AI misses at {attackLocation[0]}{attackLocation[1]}")
 
 
             
